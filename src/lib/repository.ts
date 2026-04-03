@@ -526,9 +526,10 @@ export async function saveCheckpoint(week?: number) {
     ? "The foundation is stable enough to push into the next mission band."
     : "Stay with the current week and keep the loop tight until retrieval and speaking stabilize.";
   const createdAt = new Date().toISOString();
+  const checkpointId = crypto.randomUUID();
 
   await db.insert(checkpointResults).values({
-    id: crypto.randomUUID(),
+    id: checkpointId,
     userId: profile.id,
     week: checkpointWeek,
     speakingScore,
@@ -549,7 +550,7 @@ export async function saveCheckpoint(week?: number) {
 
   return {
     result: {
-      id: crypto.randomUUID(),
+      id: checkpointId,
       week: checkpointWeek,
       speakingScore,
       listeningScore,

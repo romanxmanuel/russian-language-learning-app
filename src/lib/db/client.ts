@@ -8,10 +8,21 @@ import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "@/lib/db/schema";
 
-const dataDir = path.join(process.cwd(), "data");
-fs.mkdirSync(dataDir, { recursive: true });
+const fallbackDatabaseUrl =
+  process.env.VERCEL === "1"
+    ? "file:/tmp/russian-accelerator.db"
+    : "file:./data/russian-accelerator.db";
 
-const databaseUrl = process.env.TURSO_DATABASE_URL?.trim() || "file:./data/russian-accelerator.db";
+const databaseUrl = process.env.TURSO_DATABASE_URL?.trim() || fallbackDatabaseUrl;
+
+if (databaseUrl.startsWith("file:")) {
+  const filePath = databaseUrl.replace(/^file:/, "");
+  const resolvedPath = path.isAbsolute(filePath)
+    ? filePath
+    : path.resolve(/* turbopackIgnore: true */ process.cwd(), filePath);
+
+  fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
+}
 
 export const rawClient = createClient({
   url: databaseUrl,

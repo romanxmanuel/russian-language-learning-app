@@ -13,16 +13,15 @@ export function SpeakButton({
   rate = 0.92,
   className = "",
 }: SpeakButtonProps) {
-  const canSpeak =
-    typeof window !== "undefined" &&
-    "speechSynthesis" in window &&
-    typeof SpeechSynthesisUtterance !== "undefined";
-
-  if (!canSpeak) {
-    return null;
-  }
-
   const handleSpeak = () => {
+    if (
+      typeof window === "undefined" ||
+      !("speechSynthesis" in window) ||
+      typeof SpeechSynthesisUtterance === "undefined"
+    ) {
+      return;
+    }
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "ru-RU";
     utterance.rate = rate;
